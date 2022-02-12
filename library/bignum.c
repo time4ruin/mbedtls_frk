@@ -2008,6 +2008,8 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
                          const mbedtls_mpi *E, const mbedtls_mpi *N,
                          mbedtls_mpi *prec_RR )
 {
+    // mbedtls_printf("[*] mbedtls_mpi_exp_mod function call!\n");
+    asm volatile("SAFE1_start:"); //SAFE start
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     size_t wbits, wsize, one = 1;
     size_t i, j, nblimbs;
@@ -2235,6 +2237,7 @@ cleanup:
     if( prec_RR == NULL || prec_RR->p == NULL )
         mbedtls_mpi_free( &RR );
 
+    asm volatile("SAFE1_end:"); //SAFE end
     return( ret );
 }
 
