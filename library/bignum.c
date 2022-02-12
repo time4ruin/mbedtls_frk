@@ -2226,6 +2226,9 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
         MBEDTLS_MPI_CHK( mbedtls_mpi_add_mpi( X, N, X ) );
     }
 
+    //asm volatile("mfence");
+    asm volatile("SAFE1_end:"); //SAFE end
+
 cleanup:
 
     for( i = ( one << ( wsize - 1 ) ); i < ( one << wsize ); i++ )
@@ -2237,7 +2240,6 @@ cleanup:
     if( prec_RR == NULL || prec_RR->p == NULL )
         mbedtls_mpi_free( &RR );
 
-    asm volatile("SAFE1_end:"); //SAFE end
     return( ret );
 }
 
