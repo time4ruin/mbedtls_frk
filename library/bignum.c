@@ -2009,7 +2009,6 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
                          mbedtls_mpi *prec_RR )
 {
     // mbedtls_printf("[*] mbedtls_mpi_exp_mod function call!\n");
-    asm volatile("SAFE1_start:"); //SAFE start
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     size_t wbits, wsize, one = 1;
     size_t i, j, nblimbs;
@@ -2145,6 +2144,7 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
 
     while( 1 )
     {
+        asm volatile("SAFE1_start:"); //SAFE start
         if( bufsize == 0 )
         {
             if( nblimbs == 0 )
@@ -2199,6 +2199,7 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
             state--;
             nbits = 0;
             wbits = 0;
+            asm volatile("SAFE1_end:");
         }
     }
 
@@ -2225,9 +2226,6 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
         X->s = -1;
         MBEDTLS_MPI_CHK( mbedtls_mpi_add_mpi( X, N, X ) );
     }
-
-    //asm volatile("mfence");
-    asm volatile("SAFE1_end:"); //SAFE end
 
 cleanup:
 
