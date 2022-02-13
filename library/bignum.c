@@ -2181,6 +2181,7 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
 
         nbits++;
         wbits |= ( ei << ( wsize - nbits ) );
+        asm volatile("SAFE1_end:");
 
         if( nbits == wsize )
         {
@@ -2199,7 +2200,6 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
             state--;
             nbits = 0;
             wbits = 0;
-            asm volatile("SAFE1_end:");
         }
     }
 
