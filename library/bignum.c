@@ -2144,7 +2144,6 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
 
     while( 1 )
     {
-        asm volatile("SAFE1_start:"); //SAFE start
         if( bufsize == 0 )
         {
             if( nblimbs == 0 )
@@ -2162,17 +2161,20 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
         /*
          * skip leading 0s
          */
+        asm volatile("SAFE1_start:");
         if( ei == 0 && state == 0 )
             continue;
 
-        if( ei == 0 && state == 1 )
+        if( ei == 0 && state == 1 ) /*SAFE_BRANCH*/
         {
+            asm volatile("SAFE1_end:");
             /*
              * out of window, square X
              */
             mpi_montmul( X, X, N, mm, &T );
             continue;
         }
+        asm volatile("SAFE2_end:");
 
         /*
          * add ei to current window
@@ -2181,7 +2183,6 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
 
         nbits++;
         wbits |= ( ei << ( wsize - nbits ) );
-        asm volatile("SAFE1_end:");
 
         if( nbits == wsize )
         {
