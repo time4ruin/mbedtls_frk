@@ -2162,9 +2162,13 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
          * skip leading 0s
          */
         asm volatile("SAFE1_start:");
-        if( ei == 0 && state == 0 )
+	int __saferand__ = rand() % 2;
+	if (__saferand__){asm volatile("nop;":::"rax","rdx");} /*SAFE_BRANCH*/
+	if (__saferand__){asm volatile("nop;":::"rax","rdx");} /*SAFE_BRANCH*/
+        if( ei == 0 && state == 0 ) /*SAFE_BRANCH*/
             continue;
-
+	
+	
         if( ei == 0 && state == 1 ) /*SAFE_BRANCH*/
         {
             asm volatile("SAFE1_end:");
